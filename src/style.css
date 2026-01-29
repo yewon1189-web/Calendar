@@ -1,0 +1,186 @@
+:root {
+    --panel-width: 140px;
+    --panel-height: 420px;
+    --bg-front: #fdfbf7;
+    --bg-back: #eeeeee;
+
+    /* [수정됨] 더 꽉 접기 */
+    /* 1. 시작 각도는 유지 (방향 반대 / 모양) */
+    /* 2. 접히는 강도를 120도 -> 150도로 변경 (거의 붙을 정도로 꽉 접힘) */
+    --start-angle: 30deg;
+    --fold-angle: 160deg;
+}
+
+body {
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #1a1a1a;
+    font-family: 'Segoe UI', sans-serif;
+    overflow: hidden;
+    color: #333;
+}
+
+.scene {
+    perspective: 2500px;
+}
+
+.brochure-container {
+    width: var(--panel-width);
+    height: var(--panel-height);
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.1s ease-out;
+    cursor: pointer;
+}
+
+/* --- 패널 뼈대 --- */
+.paper {
+    width: var(--panel-width);
+    height: var(--panel-height);
+    position: absolute;
+    top: 0;
+    left: 100%;
+    /* 다음 장은 앞장 끝에 붙음 */
+    transform-origin: left center;
+    transform-style: preserve-3d;
+    transition: transform 1s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.p1 {
+    left: 0;
+}
+
+/* 1번만 0 */
+
+
+/* --- 양면 설정 --- */
+.face {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    /* 뒷면 가리기 */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 15px;
+    box-sizing: border-box;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.face.front {
+    background: var(--bg-front);
+    z-index: 2;
+    transform: rotateY(0deg);
+}
+
+.face.back {
+    background: var(--bg-back);
+    transform: rotateY(180deg);
+    z-index: 1;
+}
+
+
+/* --- [각도 로직] 꽉 접힌 반대방향 지그재그 --- */
+
+/* P1: 시작 (+) -> 오른쪽 앞으로 튀어나옴 */
+.p1 {
+    transform: rotateY(var(--start-angle));
+}
+
+/* 짝수(2,4,6): 안쪽으로 깊게 꺾임 (-) */
+.p2,
+.p4,
+.p6 {
+    transform: rotateY(calc(var(--fold-angle) * -1));
+    /* 꽉 접혔으니 그림자를 조금 더 진하게 */
+    background-image: linear-gradient(to left, rgba(0, 0, 0, 0.2), transparent 30%);
+}
+
+/* 홀수(3,5): 다시 밖으로 깊게 꺾임 (+) */
+.p3,
+.p5 {
+    transform: rotateY(var(--fold-angle));
+    /* 꽉 접혔으니 그림자를 조금 더 진하게 */
+    background-image: linear-gradient(to right, rgba(0, 0, 0, 0.2), transparent 30%);
+}
+
+
+/* --- 펼쳤을 때 --- */
+.brochure-container.open .paper {
+    transform: rotateY(0deg);
+    background-image: none;
+}
+
+.brochure-container.open {
+    /* 펼쳤을 때 중앙 정렬 */
+    transform: translateX(calc(var(--panel-width) * -2.5)) rotateY(0) rotateX(0) !important;
+    transition: transform 1s;
+}
+
+
+/* --- 디자인 요소 --- */
+.main-title {
+    background: #2c3e50 !important;
+    color: white !important;
+}
+
+.main-title h1 {
+    border: 2px solid white;
+    padding: 5px;
+    margin-top: 20px;
+    font-size: 1.5rem;
+}
+
+.img-box {
+    width: 80%;
+    height: 80px;
+    background: #ddd;
+    margin: 10px auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-weight: bold;
+}
+
+.circle-graphic {
+    width: 50px;
+    height: 50px;
+    background: coral;
+    border-radius: 50%;
+    margin: 10px auto;
+}
+
+h2 {
+    margin: 5px 0;
+    font-size: 1.1rem;
+    border-bottom: 2px solid coral;
+    display: inline-block;
+}
+
+p {
+    font-size: 0.8rem;
+    margin: 5px 0;
+    color: inherit;
+}
+
+.info-list {
+    list-style: none;
+    padding: 0;
+    font-size: 0.8rem;
+}
+
+.hint {
+    position: absolute;
+    bottom: 30px;
+    color: #888;
+    pointer-events: none;
+}
