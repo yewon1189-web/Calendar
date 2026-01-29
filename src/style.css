@@ -4,13 +4,11 @@
     --bg-front: #fdfbf7;
     --bg-back: #eeeeee;
 
-    /* [설정] 01 표지가 기준이 되도록 세팅 */
+    /* 1번 표지가 기준(0도) */
+    --start-angle: 150deg;
 
-    /* 1. 1번 패널은 회전 없이 정면(0도) 유지 */
-    --start-angle: 0deg;
-
-    /* 2. 180도에 가깝게 꽉 접음 (두께감 표현) */
-    --fold-angle: 179deg;
+    /* 꽉 접히는 각도 (179도) */
+    --fold-angle: 170deg;
 }
 
 body {
@@ -34,11 +32,12 @@ body {
     height: var(--panel-height);
     position: relative;
     transform-style: preserve-3d;
-    transition: transform 0.1s ease-out;
+    transition: transform 0.5s ease-out;
+    /* 닫힐 때 부드럽게 돌아오기 */
     cursor: pointer;
 
-    /* [초기 시점] 표지가 잘 보이도록 살짝만 틀어줌 */
-    transform: rotateY(-25deg) rotateX(10deg);
+    /* [기본 상태] 표지가 잘 보이게 살짝 오른쪽으로 틀어둠 */
+    transform: rotateY(-20deg) rotateX(10deg);
 }
 
 /* --- 패널 뼈대 --- */
@@ -53,8 +52,10 @@ body {
     transition: transform 1s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
+/* [핵심] 1번 패널은 무조건 맨 위에 오도록 우선순위 높임 */
 .p1 {
     left: 0;
+    z-index: 10;
 }
 
 
@@ -89,28 +90,27 @@ body {
 }
 
 
-/* --- [각도 로직] 표지 뒤로 쌓기 --- */
+/* --- [각도 로직] 표지 뒤로 숨기기 --- */
 
-/* P1: 기준점 (0도) */
+/* P1: 정면 (0도) */
 .p1 {
     transform: rotateY(var(--start-angle));
 }
 
-/* 짝수(2,4,6): 뒤로 접힘 (음수 -) */
-/* 이렇게 해야 P2가 P1 뒤로 숨습니다 (표지 사수!) */
+/* 짝수(2,4,6): 뒤로 179도 접힘 (-) */
+/* 마이너스 각도여야 P1 뒤로 들어갑니다 */
 .p2,
 .p4,
 .p6 {
     transform: rotateY(calc(var(--fold-angle) * -1));
-    background-image: linear-gradient(to right, rgba(0, 0, 0, 0.15), transparent 15%);
+    background-image: linear-gradient(to right, rgba(0, 0, 0, 0.2), transparent 15%);
 }
 
-/* 홀수(3,5): 다시 앞으로 접힘 (양수 +) */
-/* 뒤로 갔던 걸 다시 평행하게 맞춤 */
+/* 홀수(3,5): 다시 앞으로 179도 접힘 (+) */
 .p3,
 .p5 {
     transform: rotateY(var(--fold-angle));
-    background-image: linear-gradient(to left, rgba(0, 0, 0, 0.15), transparent 15%);
+    background-image: linear-gradient(to left, rgba(0, 0, 0, 0.2), transparent 15%);
 }
 
 
@@ -121,7 +121,6 @@ body {
 }
 
 .brochure-container.open {
-    /* 펼쳤을 때 중앙 정렬 */
     transform: translateX(calc(var(--panel-width) * -2.5)) rotateY(0) rotateX(0) !important;
     transition: transform 1s;
 }
